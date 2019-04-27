@@ -80,8 +80,8 @@ function extractSpec(dom) {
                 } else {
                     args.push({name: currentArgName, width: counter - 1});
                 }
-                counter = 1;
-                currentArgName = void 0;
+                counter = 2;
+                currentArgName = arg.replace(/[0-9]+$/, '');
             }
         }
         if (counter > 1) {
