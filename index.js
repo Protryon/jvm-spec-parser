@@ -117,3 +117,4 @@ function extractSpec(dom) {
     });
 
     console.log(JSON.stringify(instructions, null, 2));
+}
