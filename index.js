@@ -79,9 +79,9 @@ function extractSpec(dom) {
                     args.push({name: arg, width: 1});
                 } else {
                     args.push({name: currentArgName, width: counter - 1});
+                    counter = 2;
+                    currentArgName = arg.replace(/[0-9]+$/, '');    
                 }
-                counter = 2;
-                currentArgName = arg.replace(/[0-9]+$/, '');
             }
         }
         if (counter > 1) {
