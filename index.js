@@ -87,21 +87,54 @@ function extractSpec(dom) {
         if (counter > 1) {
             args.push({name: currentArgName, width: counter - 1});
         }
+        args.forEach(arg => {
+            if (arg.name === 'index') {
+                if (name === 'ldc') {
+                    arg.type = 'constref';
+                } else {
+                    arg.type = 'varref';
+                }
+            } else if (arg.name === 'indexbyte') {
+                arg.type = 'constref';
+            } else if (arg.name === 'branchbyte') {
+                arg.type = 'offset';
+            } else if (arg.name === 'branchbyte') {
+                arg.type = 'offset';
+            } else if (arg.name === 'dimensions') {
+                arg.type = 'uint8';
+            } else if (arg.name === 'const') {
+                arg.type = 'byte';
+            } else if (arg.name === 'byte') {
+                arg.type = arg.width == 1 ? 'byte' : 'short';
+            } else if (arg.name === 'atype') {
+                arg.type = 'atype';
+            } else if (arg.name === '') {
+                arg.type = 'lit0';
+            } else if (arg.name === 'count') {
+                arg.type = 'arg_count';
+            } else {
+                console.error('unknown arg name: ' + arg.name + ' from ' + name);
+            }
+        })
         if (wideable) {
             args.forEach(arg => {
                 arg.wwidth = arg.width * 2;
             });
         }
+        ins.wideable = wideable;
         ins.args = args;
 
         let stack = ins.dom.stack.slice(1)
-            .map(x => x.children.filter(y => y.name == 'span' && y.attribs.class == 'emphasis'));
+            .map(x => x.children.filter(y => (y.name == 'span' && y.attribs.class == 'emphasis') || (y.name == 'code' && y.attribs.class == 'literal')));
         if (stack.length != 2) {
             ins.popped = [];
             ins.pushed = [];
         } else {
             ins.popped = stack[0].map(x => x.children[0].children[0].data);
-            ins.pushed = stack[1].map(x => x.children[0].children[0].data);    
+            ins.pushed = stack[1].map(x => x.name === 'code' ? x.children[0].data : x.children[0].children[0].data);    
+        }
+        if (name.startsWith('invoke')) {
+            ins.popped = 'dynamic';
         }
 
         let forms = ins.dom.form.slice(1).map(x => x.children);
